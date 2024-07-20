@@ -11,7 +11,7 @@ public class PlayerEnergy : MonoBehaviour
     public float energyRechargeRate = 1f;
     //public Image EnergyBar;
 
-    private bool isRecharging = false;
+    public bool isRecharging = false;
 
     private void Start() {
         currentEnergy = maxEnergy;

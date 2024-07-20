@@ -11,18 +11,20 @@ public class EnemyPatrol : MonoBehaviour
     public Transform[] patrolPoints;
     private NavMeshAgent agent;
     public float rotationSpeed = 5f;
+    public float alertDuration = 5f;
 
     private int currentPointIndex = 0;
     private bool isAlerted = false;
+    private PlayerEnergy playerEnergy;
 
     void Start() {
 
+        playerEnergy = FindObjectOfType<PlayerEnergy>();
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         
         if(patrolPoints.Length > 0){
-            //agent.SetDestination(patrolPoints[0].position);
             SetNextPatrolPoint();
         }
     }
@@ -31,10 +33,7 @@ public class EnemyPatrol : MonoBehaviour
         if(!isAlerted){
             Patrol();
             CheckForPlayer();
-        }else{
-            AlertedBehavior();
         }
-
         RotateTowardsMovementDirection();
     }
 
@@ -75,13 +74,21 @@ public class EnemyPatrol : MonoBehaviour
                 RaycastHit2D hit = Physics2D.Raycast(transform.position, directionToPlayer, alertRange, playerLayer);
                 if(hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Player")){
                     isAlerted = true;
+                    StartCoroutine(AlertedBehavior());
                 }
             }
         }
     }
 
-    void AlertedBehavior(){
-        Debug.Log("Player Spotted");
+    IEnumerator AlertedBehavior(){
+        if(playerEnergy.isRecharging){
+            Debug.Log("Player Loses -1 life");
+            alertDuration = 5f;
+        }
+        yield return new WaitForSeconds(alertDuration);
+        isAlerted = false;
+        alertDuration = 1f;
+        SetNextPatrolPoint();
     }
 
     void OnDrawGizmosSelected() {

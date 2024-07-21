@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class PlayerLifeSystem : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public int playerMaxLife;
+    public int playerCurrentLife;
+
+    private void Start() {
+        playerCurrentLife = playerMaxLife;
+    }
+    public void PlayerLoseLife(){
+        playerCurrentLife -= 1;
+        if(playerCurrentLife <= 0){
+            PlayerDeath();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+
+
+    void PlayerDeath(){
+        Debug.Log("Change Scene");
     }
 }

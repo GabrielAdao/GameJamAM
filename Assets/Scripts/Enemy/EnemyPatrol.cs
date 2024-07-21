@@ -12,14 +12,16 @@ public class EnemyPatrol : MonoBehaviour
     private NavMeshAgent agent;
     public float rotationSpeed = 5f;
     public float alertDuration = 5f;
+    public float workZoneCheckDelay = 10f;
 
     private int currentPointIndex = 0;
     private bool isAlerted = false;
     private PlayerEnergy playerEnergy;
+    private WorkZone workZone;
 
     void Start() {
-
         playerEnergy = FindObjectOfType<PlayerEnergy>();
+        workZone = FindObjectOfType<WorkZone>();
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -27,6 +29,8 @@ public class EnemyPatrol : MonoBehaviour
         if(patrolPoints.Length > 0){
             SetNextPatrolPoint();
         }
+
+        StartCoroutine(CheckWorkZoneStatus());
     }
 
     void Update() {
@@ -65,6 +69,18 @@ public class EnemyPatrol : MonoBehaviour
         }
     }
 
+    IEnumerator CheckWorkZoneStatus(){
+        while(true){
+            if(workZone != null && !workZone.IsOnCooldown()){
+                yield return new WaitForSeconds(workZoneCheckDelay);
+                if(!workZone.IsOnCooldown() && !workZone.isHolding){
+                    Debug.Log("Workzone still active");
+                }
+            }
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
     void CheckForPlayer(){
         Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, alertRange, playerLayer);
         if(playerCollider != null){
@@ -82,7 +98,8 @@ public class EnemyPatrol : MonoBehaviour
 
     IEnumerator AlertedBehavior(){
         if(playerEnergy.isRecharging){
-            Debug.Log("Player Loses -1 life");
+            PlayerLifeSystem playerLifeSystem = FindObjectOfType<PlayerLifeSystem>();
+            playerLifeSystem.PlayerLoseLife();
             alertDuration = 5f;
         }
         yield return new WaitForSeconds(alertDuration);

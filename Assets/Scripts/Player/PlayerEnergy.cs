@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,28 +14,44 @@ public class PlayerEnergy : MonoBehaviour
 
     public bool isRecharging = false;
 
+    public GameObject panel;
+    private bool isInPlayZone = false;
     private void Start() {
         currentEnergy = maxEnergy;
+        if(panel != null){
+            panel.SetActive(false);
+        }
         //UpdateEnergyBar();
     }
 
-    private void Update() {
-        //UpdateEnergyBar();
+    private void Update() { 
+         if (isInPlayZone)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                panel.SetActive(true);
+                isRecharging = true;
+                StopAllCoroutines();
+                StartCoroutine(RechargeEnergy());
+            }
+            else if (Input.GetKeyUp(KeyCode.Space))
+            {
+                panel.SetActive(false);
+                isRecharging = false;
+                StopAllCoroutines();
+            }
+        }
+
+        if(currentEnergy < 1){
+            PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+            playerMovement.Stunned(5f);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("PlayZone")){
-            isRecharging = true;
-            StopAllCoroutines();
-            StartCoroutine(RechargeEnergy());
+            isInPlayZone = true;
         } 
-        //else if(other.CompareTag("WorkZone")){
-        //    WorkZone workzone = other.GetComponent<WorkZone>();
-        //    if(workzone != null && !workzone.IsOnCooldown()){
-        //        workzone.StartCooldown();
-        //        SpendEnergy(1f);
-        //    }
-        //}
     }
 
     public void OnTriggerStay2D(Collider2D other) {
@@ -44,11 +61,16 @@ public class PlayerEnergy : MonoBehaviour
                 workZone.HandleWorkZone(this);
             }
         }
+        
     }
 
     private void OnTriggerExit2D(Collider2D other) {
         if(other.CompareTag("PlayZone")){
+            isInPlayZone = false;
             isRecharging = false;
+            if(panel != null){
+                panel.SetActive(false);
+            }
         }
     }
 

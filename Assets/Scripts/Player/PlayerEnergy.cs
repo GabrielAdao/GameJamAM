@@ -27,11 +27,21 @@ public class PlayerEnergy : MonoBehaviour
             isRecharging = true;
             StopAllCoroutines();
             StartCoroutine(RechargeEnergy());
-        } else if(other.CompareTag("WorkZone")){
-            WorkZone workzone = other.GetComponent<WorkZone>();
-            if(workzone != null && !workzone.isOnCooldown()){
-                workzone.StartCooldown();
-                SpendEnergy(1f);
+        } 
+        //else if(other.CompareTag("WorkZone")){
+        //    WorkZone workzone = other.GetComponent<WorkZone>();
+        //    if(workzone != null && !workzone.IsOnCooldown()){
+        //        workzone.StartCooldown();
+        //        SpendEnergy(1f);
+        //    }
+        //}
+    }
+
+    public void OnTriggerStay2D(Collider2D other) {
+        if(other.CompareTag("WorkZone")){
+            WorkZone workZone = other.GetComponent<WorkZone>();
+            if(workZone != null && !workZone.IsOnCooldown()){
+                workZone.HandleWorkZone(this);
             }
         }
     }
@@ -50,9 +60,10 @@ public class PlayerEnergy : MonoBehaviour
         }
     }
 
-    void SpendEnergy(float amount){
+    public void SpendEnergy(float amount){
         currentEnergy -= amount;
         currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
+
     }
 
     //void UpdateEnergyBar(){

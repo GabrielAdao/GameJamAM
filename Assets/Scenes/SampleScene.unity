@@ -275,7 +275,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &231606079
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2776,7 +2776,7 @@ MonoBehaviour:
   currentEnergy: 0
   energyRechargeRate: 1
   isRecharging: 0
-  GGGpanel: {fileID: 0}
+  GGGpanel: {fileID: 231606078}
   energySprite: {fileID: 21300000, guid: 6cba9d8b846d78b468dcd20320f960d9, type: 3}
   energyPanel: {fileID: 2018244718}
 --- !u!114 &867561922

@@ -18,6 +18,7 @@ public class EnemyPatrol : MonoBehaviour
     private bool isAlerted = false;
     private PlayerEnergy playerEnergy;
     private WorkZone workZone;
+    public Animator animator;
 
     void Start() {
         playerEnergy = FindObjectOfType<PlayerEnergy>();
@@ -29,16 +30,17 @@ public class EnemyPatrol : MonoBehaviour
         if(patrolPoints.Length > 0){
             SetNextPatrolPoint();
         }
-
         StartCoroutine(CheckWorkZoneStatus());
     }
 
     void Update() {
+
         if(!isAlerted){
             Patrol();
             CheckForPlayer();
         }
         RotateTowardsMovementDirection();
+        UpdateAnimation();
     }
 
     void Patrol(){
@@ -64,9 +66,15 @@ public class EnemyPatrol : MonoBehaviour
         Vector3 direction = agent.velocity.normalized;
         if(direction != Vector3.zero){
             float step = rotationSpeed * Time.deltaTime;
-            Vector3 newDirection = Vector3.RotateTowards(transform.right, direction, step, 0.0f);
-            transform.right = newDirection;
+            Vector3 newDirection = Vector3.RotateTowards(transform.up, direction, step, 0.0f);
+            transform.up = newDirection;
         }
+    }
+    void UpdateAnimation(){
+        Vector3 movement = agent.velocity;
+        animator.SetFloat("Horizontal", movement.x);
+        animator.SetFloat("Vertical", movement.y);
+        animator.SetFloat("Speed", movement.sqrMagnitude);
     }
 
     IEnumerator CheckWorkZoneStatus(){
@@ -74,6 +82,8 @@ public class EnemyPatrol : MonoBehaviour
             if(workZone != null && !workZone.IsOnCooldown()){
                 yield return new WaitForSeconds(workZoneCheckDelay);
                 if(!workZone.IsOnCooldown() && !workZone.isHolding){
+                    PlayerLifeSystem playerLifeSystem = FindObjectOfType<PlayerLifeSystem>();
+                    playerLifeSystem.PlayerLoseLife();
                     Debug.Log("Workzone still active");
                 }
             }

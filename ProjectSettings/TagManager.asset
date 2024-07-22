@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayZone
   - WorkZone
+  - WorkStation
   layers:
   - Default
   - TransparentFX

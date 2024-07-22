@@ -26,6 +26,8 @@ public class WorkZone : MonoBehaviour
     private bool isPlayerInZone = false;
     public bool isHolding = false; 
     private PlayerEnergy playerEnergy;
+    public Sprite activeSprite; 
+    public Sprite alertSprite;
 
 
     private void Start() {
@@ -91,22 +93,21 @@ public class WorkZone : MonoBehaviour
             holdTimer = 0f;
             holdText.text = "";
             isHolding = false;
-            UpdateZoneColor();
         }
     }
 
-    void UpdateZoneColor(){
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if(sr != null){
-            if(onCooldown){
-                sr.color = cooldownColor;
-            }else if(isPlayerInZone && isHolding){
-                sr.color = holdColor;
-            }else{
-                sr.color = activeColor;
+     void UpdateZoneColor() {
+        GameObject[] spriteObjects = GameObject.FindGameObjectsWithTag("WorkStation");
+        foreach (GameObject spriteObject in spriteObjects) {
+            SpriteRenderer sr = spriteObject.GetComponent<SpriteRenderer>();
+            if (sr != null) {
+                if (onCooldown) {
+                    sr.sprite = alertSprite;
+                }
+                    sr.sprite = activeSprite;
+                }
             }
         }
-    }
     void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player")){
             isPlayerInZone = true;

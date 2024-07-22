@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public float playerSpeed = 5f;
     private bool isStunned = false;
     public float stunDuration = 2f;
+    public Animator animator;
 
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -17,6 +18,10 @@ public class PlayerMovement : MonoBehaviour
     private void Update() {
         movement.x = Input.GetAxis("Horizontal");
         movement.y = Input.GetAxis("Vertical");
+        
+        animator.SetFloat("Horizontal", movement.x);
+        animator.SetFloat("Vertical", movement.y);
+        animator.SetFloat("Speed", movement.sqrMagnitude);
     }
     
     private void FixedUpdate() {
